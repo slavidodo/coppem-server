@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\pch.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\luaenv.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\database.cpp">
+      <Filter>Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\connection.cpp">
+      <Filter>Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\file.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\pch.h" />
+    <ClInclude Include="..\src\luaenv.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\database.h">
+      <Filter>Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\connection.h">
+      <Filter>Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\file.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{08d6baec-e019-4f06-9d4a-fafdb495987e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Threads">
+      <UniqueIdentifier>{cbe7e68a-4760-49f4-b14e-ea9b96dc53fb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

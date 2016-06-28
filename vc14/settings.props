@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LUA_DIR>$(CPMSDK_DDIR)\LuaJIT\</LUA_DIR>
+    <GMP_DIR>$(CPMSDK_DDIR)\mpir\</GMP_DIR>
+    <MYSQLC_DIR>$(CPMSDK_DDIR)\mysql-connector-c\</MYSQLC_DIR>
+	<PUGIXML_DIR>$(CPMSDK_DDIR)\pugixml\</PUGIXML_DIR>
+    <PREPROCESSOR_DEFS>_CRT_SECURE_NO_WARNINGS;</PREPROCESSOR_DEFS>
+    <INCLUDES>$(BOOST_ROOT);$(LUA_DIR)\include;$(GMP_DIR)\include;$(MYSQLC_DIR)\include;$(PUGIXML_DIR)\include;</INCLUDES>
+    <LIBS32>$(BOOST_ROOT)\lib32-msvc-14.0;$(LUA_DIR)\lib;$(GMP_DIR)\lib;$(MYSQLC_DIR)\lib</LIBS32>
+    <LIBS64>$(BOOST_ROOT)\lib64-msvc-14.0;$(LUA_DIR)\lib64;$(GMP_DIR)\lib64;$(MYSQLC_DIR)\lib64</LIBS64>
+    <LIBDEPS>lua53.lib;mpir.lib;libmysql.lib</LIBDEPS>
+    <LIBDEPS_D>lua53.lib;mpir.lib;libmysql.lib</LIBDEPS_D>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(INCLUDES)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(LIBDEPS)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>$(PREPROCESSOR_DEFS)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="LUA_DIR">
+      <Value>$(LUA_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="GMP_DIR">
+      <Value>$(GMP_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="MYSQLC_DIR">
+      <Value>$(MYSQLC_DIR)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="PREPROCESSOR_DEFS">
+      <Value>$(PREPROCESSOR_DEFS)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="INCLUDES">
+      <Value>$(INCLUDES)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LIBS32">
+      <Value>$(LIBS32)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LIBS64">
+      <Value>$(LIBS64)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LIBDEPS">
+      <Value>$(LIBDEPS)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="LIBDEPS_D">
+      <Value>$(LIBDEPS_D)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
