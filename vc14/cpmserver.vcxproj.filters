@@ -15,6 +15,21 @@
     <ClCompile Include="..\src\file.cpp">
       <Filter>Environment</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\server.cpp">
+      <Filter>Environment\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\networkmessage.cpp">
+      <Filter>Environment\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\protocol.cpp">
+      <Filter>Environment\ServerProtocol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scheduler.cpp">
+      <Filter>Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks.cpp">
+      <Filter>Threads</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\pch.h" />
@@ -30,6 +45,24 @@
     <ClInclude Include="..\src\file.h">
       <Filter>Environment</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\server.h">
+      <Filter>Environment\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\networkmessage.h">
+      <Filter>Environment\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\protocol.h">
+      <Filter>Environment\ServerProtocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks.h">
+      <Filter>Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scheduler.h">
+      <Filter>Threads</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\thread_holder_base.h">
+      <Filter>Threads</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Environment">
@@ -37,6 +70,12 @@
     </Filter>
     <Filter Include="Threads">
       <UniqueIdentifier>{cbe7e68a-4760-49f4-b14e-ea9b96dc53fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment\Server">
+      <UniqueIdentifier>{880e72c7-2e42-4106-9c01-fc9b78543aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment\ServerProtocol">
+      <UniqueIdentifier>{20298f5a-1827-42ad-9ad9-3d9cd6e0439e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

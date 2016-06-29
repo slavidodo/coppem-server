@@ -2,6 +2,14 @@
 
 #include "pch.h"
 #include "luaenv.h"
+#include <boost/range/adaptor/reversed.hpp>
+
+#include "scheduler.h"
+#include "tasks.h"
+#include "server.h"
+
+extern Dispatcher g_dispatcher;
+extern Scheduler g_scheduler;
 
 extern std::condition_variable g_loaderSignal;
 
@@ -223,6 +231,14 @@ int LuaBinder::luaObjectCreate(lua_State* L)
 	return 1;
 }
 
+// Server
+int LuaBinder::luaServerShutdown(lua_State* L)
+{
+	int error = LuaBinder::getNumber<int>(L, 1, EXIT_SUCCESS);
+	Server::Shutdown(error);
+	return 1;
+}
+
 // Database
 int LuaBinder::luaDatabaseConnect(lua_State* L)
 {
@@ -319,7 +335,7 @@ void LuaBinder::pushDBResult(lua_State* L, DBResult_ptr res)
 {
 	LuaResultObject* resObj = new LuaResultObject();
 	resObj->id = ++last_result_id;
-	results[resObj->id] = res;
+	results.insert(std::make_pair(resObj->id, res));
 
 	LuaBinder::pushUserdata(L, resObj);
 	LuaBinder::setMetatable(L, -1, "DBResult");
@@ -391,6 +407,94 @@ int LuaBinder::luaResultFree(lua_State* L)
 	return 1;
 }
 
+// Dispatcher
+int LuaBinder::luaDispatcherStart(lua_State*)
+{
+	g_dispatcher.start();
+	return 1;
+}
+int LuaBinder::luaDispatcherShutdown(lua_State*)
+{
+	g_dispatcher.shutdown();
+	return 1;
+}
+int LuaBinder::luaDispatcherAddTask(lua_State* L)
+{
+	// Dispatcher.addTask(callable, ...)
+	int parameters = lua_gettop(L);
+	if (lua_isfunction(L, -parameters/*1*/)) {
+		LuaEventObject* eventDesc = new LuaEventObject();
+		for (int i = 0; i < parameters - 1; ++i) {
+			eventDesc->parameters.push_back(luaL_ref(L, LUA_REGISTRYINDEX));
+		}
+
+		eventDesc->function = luaL_ref(L, LUA_REGISTRYINDEX);
+
+		g_dispatcher.addTask(createTask(std::bind(&LuaBinder::executeLuaEvent, L, eventDesc)));
+		LuaBinder::pushBoolean(L, true);
+	} else {
+		LuaBinder::reportError("[Error - Scheduler.addTask] Callable(#arg 1) must be function.");
+		LuaBinder::pushBoolean(L, false);
+	}
+
+	return 1;
+}
+
+// Scheduler
+int LuaBinder::luaSchedulerStart(lua_State*)
+{
+	g_scheduler.start();
+	return 1;
+}
+int LuaBinder::luaSchedulerShutdown(lua_State*)
+{
+	g_scheduler.shutdown();
+	return 1;
+}
+int LuaBinder::luaSchedulerAddEvent(lua_State* L)
+{
+	// Scheduler.addEvent(callable, delay, ...)
+	int parameters = lua_gettop(L);
+	if (lua_isfunction(L, -parameters/*1*/)) {
+		LuaEventObject* eventDesc = new LuaEventObject();
+		for (int i = 0; i < parameters - 2; ++i) {
+			eventDesc->parameters.push_back(luaL_ref(L, LUA_REGISTRYINDEX));
+		}
+
+		uint32_t delay = std::max<uint32_t>(100, LuaBinder::getNumber<uint32_t>(L, 2));
+		lua_pop(L, 1);
+
+		eventDesc->function = luaL_ref(L, LUA_REGISTRYINDEX);
+		LuaBinder::pushnumber(L, 
+			g_scheduler.addEvent(createSchedulerTask(delay,
+				std::bind(&LuaBinder::executeLuaEvent, L, eventDesc))));
+	} else {
+		LuaBinder::reportError("[Error - Scheduler.addTask] Callable(#arg 1) must be function.");
+		LuaBinder::pushBoolean(L, false);
+	}
+
+	return 1;
+}
+int LuaBinder::luaSchedulerStopEvent(lua_State* L)
+{
+	// Scheduler.stopEvent(eventid)
+	uint32_t eventId = LuaBinder::getNumber<uint32_t>(L, 1);
+	g_scheduler.stopEvent(eventId);
+	return 1;
+}
+
+// Executions
+void LuaBinder::executeLuaEvent(lua_State* L, LuaEventObject* obj)
+{
+	lua_rawgeti(L, LUA_REGISTRYINDEX, obj->function);
+	for (auto parameter : boost::adaptors::reverse(obj->parameters)) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, parameter);
+	}
+
+	lua_insert(L, obj->function);
+	lua_pcall(L, obj->parameters.size(), 1, 0);
+}
+
 // Registering All function into lua_state
 void LuaBinder::register_funcs(lua_State* L)
 {
@@ -398,7 +502,7 @@ void LuaBinder::register_funcs(lua_State* L)
 
 	// Serer
 	LuaBinder::registerTable(L, "Server");
-
+	LuaBinder::registerMethod(L, "Server", "shutdown", &LuaBinder::luaServerShutdown);
 	// Database
 	LuaBinder::registerTable(L, "Database");
 	LuaBinder::registerMethod(L, "Database", "connect", &LuaBinder::luaDatabaseConnect);
@@ -417,4 +521,16 @@ void LuaBinder::register_funcs(lua_State* L)
 	LuaBinder::registerMethod(L, "DBResult", "getStream", &LuaBinder::luaResultGetStream);
 	LuaBinder::registerMethod(L, "DBResult", "next", &LuaBinder::luaResultNext);
 	LuaBinder::registerMethod(L, "DBResult", "free", &LuaBinder::luaResultFree);
+
+	// Dispatcher
+	LuaBinder::registerTable(L, "Dispatcher");
+	LuaBinder::registerMethod(L, "Dispatcher", "start", &LuaBinder::luaDispatcherStart);
+	LuaBinder::registerMethod(L, "Dispatcher", "shutdown", &LuaBinder::luaDispatcherShutdown);
+	LuaBinder::registerMethod(L, "Dispatcher", "addTask", &LuaBinder::luaDispatcherAddTask);
+
+	LuaBinder::registerTable(L, "Scheduler");
+	LuaBinder::registerMethod(L, "Scheduler", "start", &LuaBinder::luaSchedulerStart);
+	LuaBinder::registerMethod(L, "Scheduler", "shutdown", &LuaBinder::luaSchedulerShutdown);
+	LuaBinder::registerMethod(L, "Scheduler", "addEvent", &LuaBinder::luaSchedulerAddEvent);
+	LuaBinder::registerMethod(L, "Scheduler", "stopEvent", &LuaBinder::luaSchedulerStopEvent);
 }

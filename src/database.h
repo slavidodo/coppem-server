@@ -64,7 +64,7 @@ class Database
 		 * @param query command
 		 * @return true on success, false on error
 		 */
-		bool executeQuery(const std::string& query);
+		bool executeQuery(const String& query);
 
 		/**
 		 * Queries database.
@@ -73,7 +73,7 @@ class Database
 		 *
 		 * @return results object (nullptr on error)
 		 */
-		DBResult_ptr storeQuery(const std::string& query);
+		DBResult_ptr storeQuery(const String& query);
 
 		/**
 		 * Escapes string for query.
@@ -83,7 +83,7 @@ class Database
 		 * @param s string to be escaped
 		 * @return quoted string
 		 */
-		std::string escapeString(const std::string& s) const;
+		String escapeString(const String& s) const;
 
 		/**
 		 * Escapes binary stream for query.
@@ -94,7 +94,7 @@ class Database
 		 * @param length stream length
 		 * @return quoted string
 		 */
-		std::string escapeBlob(const char* s, uint32_t length) const;
+		String escapeBlob(const char* s, uint32_t length) const;
 
 		/**
 		 * Retrieve id of last inserted row
@@ -152,7 +152,7 @@ class DBResult
 		DBResult& operator=(const DBResult&) = delete;
 
 		template<typename T>
-		T getNumber(const std::string& s) const
+		T getNumber(const String& s) const
 		{
 			auto it = listNames.find(s);
 			if (it == listNames.end()) {
@@ -173,8 +173,8 @@ class DBResult
 			return data;
 		}
 
-		std::string getString(const std::string& s) const;
-		const char* getStream(const std::string& s, unsigned long& size) const;
+		std::string getString(const String& s) const;
+		const char* getStream(const String& s, unsigned long& size) const;
 
 		bool hasNext() const;
 		bool next();
@@ -183,7 +183,7 @@ class DBResult
 		MYSQL_RES* handle;
 		MYSQL_ROW row;
 
-		std::map<std::string, size_t> listNames;
+		std::map<String, size_t> listNames;
 
 	friend class Database;
 };
@@ -194,14 +194,14 @@ class DBResult
 class DBInsert
 {
 	public:
-		explicit DBInsert(std::string query);
-		bool addRow(const std::string& row);
+		explicit DBInsert(String query);
+		bool addRow(const String& row);
 		bool addRow(std::ostringstream& row);
 		bool execute();
 
 	protected:
-		std::string query;
-		std::string values;
+		String query;
+		String values;
 		size_t length;
 };
 

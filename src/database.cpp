@@ -102,7 +102,7 @@ bool Database::commit()
 	return true;
 }
 
-bool Database::executeQuery(const std::string& query)
+bool Database::executeQuery(const String& query)
 {
 	bool success = true;
 
@@ -129,7 +129,7 @@ bool Database::executeQuery(const std::string& query)
 	return success;
 }
 
-DBResult_ptr Database::storeQuery(const std::string& query)
+DBResult_ptr Database::storeQuery(const String& query)
 {
 	databaseLock.lock();
 
@@ -165,17 +165,17 @@ DBResult_ptr Database::storeQuery(const std::string& query)
 	return result;
 }
 
-std::string Database::escapeString(const std::string& s) const
+String Database::escapeString(const String& s) const
 {
 	return escapeBlob(s.c_str(), s.length());
 }
 
-std::string Database::escapeBlob(const char* s, uint32_t length) const
+String Database::escapeBlob(const char* s, uint32_t length) const
 {
 	// the worst case is 2n + 1
 	size_t maxLength = (length * 2) + 1;
 
-	std::string escaped;
+	String escaped;
 	escaped.reserve(maxLength + 2);
 	escaped.push_back('\'');
 
@@ -210,22 +210,22 @@ DBResult::~DBResult()
 	mysql_free_result(handle);
 }
 
-std::string DBResult::getString(const std::string& s) const
+String DBResult::getString(const String& s) const
 {
 	auto it = listNames.find(s);
 	if (it == listNames.end()) {
 		std::cout << "[Error - DBResult::getString] Column '" << s << "' does not exist in result set." << std::endl;
-		return std::string();
+		return String();
 	}
 
 	if (row[it->second] == nullptr) {
-		return std::string();
+		return String();
 	}
 
-	return std::string(row[it->second]);
+	return String(row[it->second]);
 }
 
-const char* DBResult::getStream(const std::string& s, unsigned long& size) const
+const char* DBResult::getStream(const String& s, unsigned long& size) const
 {
 	auto it = listNames.find(s);
 	if (it == listNames.end()) {
@@ -254,12 +254,12 @@ bool DBResult::next()
 	return row != nullptr;
 }
 
-DBInsert::DBInsert(std::string query) : query(query)
+DBInsert::DBInsert(String query) : query(query)
 {
 	this->length = this->query.length();
 }
 
-bool DBInsert::addRow(const std::string& row)
+bool DBInsert::addRow(const String& row)
 {
 	// adds new row to buffer
 	const size_t rowLength = row.length();
@@ -286,7 +286,7 @@ bool DBInsert::addRow(const std::string& row)
 bool DBInsert::addRow(std::ostringstream& row)
 {
 	bool ret = addRow(row.str());
-	row.str(std::string());
+	row.str(String());
 	return ret;
 }
 

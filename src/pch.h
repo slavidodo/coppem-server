@@ -4,6 +4,7 @@
 #define _PCH_DEFINED
 
 #include <iostream>
+#include <stdio.h>
 
 #include <assert.h>
 #include <string>
@@ -13,14 +14,14 @@
 #include <condition_variable>
 #include <mutex>
 #include <memory>
-
 #include <map>
 #include <unordered_map>
 #include <vector>
 #include <list>
 
 #include <lua.hpp>
-#include <boost/utility.hpp>
+#include <boost\utility.hpp>
+#include <boost\asio.hpp>
 
 #define LIB
 
