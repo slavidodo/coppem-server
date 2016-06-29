@@ -1,3 +1,14 @@
+-- Database
+---- Methods :
+	-- Database.connect(host, user, password, database, port, socket) (bool [success])
+	-- Database.storeQuery(query) (result [userdata])
+	-- Database.executeQuery(query) (bool)
+	-- Database.escapeString(str) (string [escaped string])
+	-- Database.escapeBlob(blob) (bin [ready])
+	-- Database.lastInsertId() (int [id])
+	-- Database.isConnected() (bool [connected])
+	-- Database.tableExists(table) (bool [exists])
+	
 Database.Information = {
 	host = "127.0.0.1",
 	user = "",
@@ -14,7 +25,7 @@ if not Database.connect(Database.Information.host,
 			Database.Information.port,
 			Database.Information.socket
 		) then
-	--Server.shutdown()
+	Server.shutdown(1)
 end
 
 db = Database
